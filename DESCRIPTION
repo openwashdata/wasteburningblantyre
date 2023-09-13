@@ -1,15 +1,23 @@
 Package: wasteburningblantyre
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+Authors@R: c(
+    person("Lars", "Schöbitz", , "lschoebitz@ethz.ch", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-2196-5015")),
+    person("Mabvuto", "Yesaya", , "yesayamabvuto@gmail.com", role = "aut",
+           comment = c(ORCID = "0000-0003-3234-9699")),
+    person("Elizabeth", "Tilley", , "tilleye@ethz.ch", role = "aut",
+           comment = c(ORCID = "0000-0002-2095-9724")),
+    person("Saloni", "Vijay", , "svijay@ethz.ch", role = "aut",
+           comment = c(ORCID = "0000-0001-5883-5308"))
+  )
 Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: CC BY 4.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Language: en-GB
 Depends: 
     R (>= 2.10)
 LazyData: true
+Date: 2023-09-13
