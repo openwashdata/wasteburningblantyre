@@ -1,0 +1,35 @@
+# -----------------------------------------------------------
+# CITATION file created with {cffr} R package, v0.5.0
+# See also: https://docs.ropensci.org/cffr/
+# -----------------------------------------------------------
+ 
+cff-version: 1.2.0
+message: 'To cite package "wasteburningblantyre" in publications use:'
+type: software
+license: CC-BY-4.0
+title: 'wasteburningblantyre: What the Package Does (One Line, Title Case)'
+version: 0.0.0.9000
+abstract: What the package does (one paragraph).
+authors:
+- family-names: Schöbitz
+  given-names: Lars
+  email: lschoebitz@ethz.ch
+  orcid: https://orcid.org/0000-0003-2196-5015
+- family-names: Yesaya
+  given-names: Mabvuto
+  email: yesayamabvuto@gmail.com
+  orcid: https://orcid.org/0000-0003-3234-9699
+- family-names: Tilley
+  given-names: Elizabeth
+  email: tilleye@ethz.ch
+  orcid: https://orcid.org/0000-0002-2095-9724
+- family-names: Vijay
+  given-names: Saloni
+  email: svijay@ethz.ch
+  orcid: https://orcid.org/0000-0001-5883-5308
+date-released: '2023-09-13'
+contact:
+- family-names: Schöbitz
+  given-names: Lars
+  email: lschoebitz@ethz.ch
+  orcid: https://orcid.org/0000-0003-2196-5015

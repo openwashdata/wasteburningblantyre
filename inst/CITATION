@@ -1,0 +1,15 @@
+
+bibentry(bibtype = "Misc",
+         key = "schobitzyesaya",
+         title = "wasteburningblantyre: What the Package Does (One Line, Title Case)",
+         author = c(person(given = "Lars",
+                           family = "Schöbitz"),
+                    person(given = "Mabvuto",
+                           family = "Yesaya"),
+                    person(given = "Elizabeth",
+                           family = "Tilley"),
+                    person(given = "Saloni",
+                           family = "Vijay")),
+         year = "2023",
+         abstract = "What the package does (one paragraph).",
+         version = "0.0.0.9000")

@@ -355,6 +355,7 @@ usethis::use_data(summer_survey,
 # additional processing ---------------------------------------------------
 
 # Specify values for directory and file_name
+
 directories <- c(rep("data/", 4))
 
 file_names <- c("summer_survey.rda",
@@ -373,5 +374,34 @@ dictionary |>
 
 dictionary |>
   openxlsx::write.xlsx("data-raw/dictionary.xlsx")
+
+## --------- cffr
+
+library(cffr)
+
+packageVersion("cffr")
+
+# Hard code doi
+# doi <- "10.5281/zenodo.6470427"
+
+# creates CFF with all author roles
+mod_cff <- cff_create("DESCRIPTION",
+                      dependencies = FALSE,
+                      keys = list(#"doi" = doi,
+                                  "date-released" = Sys.Date()))
+
+# writes the CFF file
+cff_write(mod_cff)
+
+# Now write a CITATION file from the CITATION.cff file
+# Use inst/CITATION instead (the default if not provided)
+path_cit <- file.path("inst/CITATION")
+
+write_citation("CITATION.cff", file = path_cit)
+
+# By last, read the citation
+cat(readLines(path_cit), sep = "\n")
+
+
 
 
