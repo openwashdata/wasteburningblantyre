@@ -6,7 +6,7 @@ library(tidyverse)
 
 # functions ---------------------------------------------------------------
 
-source("utils/count_unnest.R")
+source("utils/get_variable_info.R")
 
 is_binary <- function(x) {
   all(x %in% c(0, 1))
@@ -351,4 +351,26 @@ usethis::use_data(summer_survey,
                   overwrite = TRUE)
 
 
+
+# additional processing ---------------------------------------------------
+
+# Specify values for directory and file_name
+directories <- c(rep("data/", 4))
+
+file_names <- c("summer_survey.rda",
+                "winter_survey.rda",
+                "summer_characterisation.rda",
+                "winter_characterisation.rda")
+
+dictionary <- get_variable_info(data = list(summer_survey,
+                                            winter_survey,
+                                            summer_characterisation,
+                                            winter_characterisation),
+                                directory = directories,
+                                file_name = file_names)
+dictionary |>
+  write_csv("data-raw/dictionary.csv")
+
+dictionary |>
+  openxlsx::write.xlsx("data-raw/dictionary.xlsx")
 
