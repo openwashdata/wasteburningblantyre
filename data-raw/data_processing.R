@@ -117,8 +117,12 @@ survey_winter_labelled <- survey_winter |>
          cooking,
          cook_place,
          times_cook,
-         vehicles
-  ) |>
+         vehicles,
+         ti,
+         # repeat_time2,
+         timee,
+         # repeat_time3,
+         waste) |>
   pivot_longer(cols = !id:cooking_specify) |>
   # separates responses for multiple choice questions
   separate(col = name, into = c("var_name", "name"), sep = "/") |>
@@ -159,6 +163,7 @@ winter_survey <- survey_winter_labelled |>
   mutate(females = map(females, as.numeric)) |>
   mutate(males = map(males, as.numeric)) |>
   mutate(daily_waste = map(daily_waste, as.numeric)) |>
+  mutate(price = map(price, as.numeric)) |>
   mutate(settlement_type = case_when(
     locat %in% c("Sunnyside", "Nyambadwe", "Namiwawa", "Naperi") ~ "formal",
     locat %in% c("Ndirande", "Kachere", "Chirimba", "Bangwe") ~ "informal"
@@ -319,6 +324,7 @@ summer_survey <- survey_summer_labelled |>
   mutate(females_no = map(females_no, as.numeric)) |>
   mutate(males_no = map(males_no, as.numeric)) |>
   mutate(waste_generation = map(waste_generation, as.numeric)) |>
+  mutate(worker_fee = map(worker_fee, as.numeric)) |>
   mutate(settlement_type = case_when(
     locat %in% c("Sunnyside", "Nyambadwe", "Namiwawa", "Naperi") ~ "formal",
     locat %in% c("Ndirande", "Kachere", "Chirimba", "Bangwe") ~ "informal"
@@ -339,7 +345,6 @@ winter_characterisation <- characterisation_winter |>
   relocate(date_collect, .before = today) |>
   rename(characterisation_date = today)
 
-
 # export data -------------------------------------------------------------
 
 summer_characterisation <- characterisation_summer |>
@@ -347,7 +352,122 @@ summer_characterisation <- characterisation_summer |>
   rename(id = hh_identifier) |>
   left_join(dates_summer) |>
   mutate(season = "summer") |>
-  relocate(date_collect, .before = characterisation_date)
+  relocate(date_collect, .before = characterisation_date) |>
+  filter(!is.na(id))
+
+
+# combine all data into one resource --------------------------------------
+
+winter_survey_join <- winter_survey |>
+  select(id,
+         season,
+         settlement_name = locat,
+         settlement_type,
+         date_survey = today,
+         #wmanagement,
+         occupation,
+         males,
+         females,
+         daily_waste,
+         burn_often,
+         # burn_time,
+         # cooking, cooking_specify, cook_place, times_cook, vehicles, ti,
+         waste
+  )
+
+
+winter_characterisation_join <-  winter_characterisation |>
+  mutate(settlement_type = case_when(
+    settlement_name %in% c("Sunnyside", "Nyambadwe", "Namiwawa", "Naperi") ~ "formal",
+    settlement_name %in% c("Ndirande", "Kachere", "Chirimba", "Bangwe") ~ "informal"
+  )) |>
+  select(id,
+         date_collect,
+         date_characterisation = characterisation_date,
+         settlement_name,
+         settlement_type,
+         transparent_bag,
+         wood_leaves,
+         cardboard_paper,
+         plastic_bottles,
+         plastic_bags,
+         other_plastics,
+         clothes_textiles,
+         rubber,
+         others
+  ) |>
+  filter(!id %in% c(219, 226, 229))
+
+winter_survey |>
+  left_join(winter_characterisation_join) |>
+  select(id, waste, date_characterisation) |>
+  filter(waste == "No") |>
+  filter(!is.na(date_characterisation))
+
+winter_survey_bind <- winter_survey_join |>
+  left_join(winter_characterisation_join)
+
+
+winter_characterisation |>
+  count(id, sort = TRUE)
+
+summer_characterisation_join <- summer_characterisation |>
+  mutate(settlement_type = case_when(
+    settlement_name %in% c("Sunnyside", "Nyambadwe", "Namiwawa", "Naperi") ~ "formal",
+    settlement_name %in% c("Ndirande", "Kachere", "Chirimba", "Bangwe") ~ "informal"
+  )) |>
+  select(id,
+         season,
+         date_collect,
+         date_characterisation = characterisation_date,
+         settlement_name,
+         settlement_type,
+         transparent_bag,
+         wood_leaves,
+         cardboard_paper,
+         plastic_bottles,
+         plastic_bags,
+         other_plastics,
+         clothes_textiles,
+         rubber,
+         others) |>
+  mutate(plastic_bags = case_when(
+    plastic_bags == "p.248" ~ "0.248",
+    TRUE ~ plastic_bags)) |>
+  mutate(plastic_bags = as.numeric(plastic_bags))
+
+summer_survey_join <- summer_survey |>
+  select(id,
+         season,
+         settlement_name = locat,
+         settlement_type,
+         date_survey = today,
+         #wmanagement = managing_waste, # needs adaptation
+         occupation,
+         males = males_no,
+         females = females_no,
+         daily_waste = waste_generation,
+         burn_often, # need adaptation
+         # burn_time
+         waste = agreement
+  )
+
+summer_survey_join |>
+  left_join(summer_characterisation_join) |>
+  select(id, waste, date_characterisation) |>
+  filter(waste == "No") |>
+  filter(!is.na(date_characterisation))
+
+
+
+summer_survery_bind <- summer_survey_join |>
+  left_join(summer_characterisation_join)
+
+
+wasteburningblantyre <- summer_survery_bind |>
+  bind_rows(winter_survey_bind) |>
+  select(-waste) |>
+  relocate(c(date_collect, date_characterisation), .after = date_survey)
 
 ## code to prepare `DATASET` dataset goes here
 
@@ -355,8 +475,25 @@ usethis::use_data(summer_survey,
                   winter_survey,
                   summer_characterisation,
                   winter_characterisation,
+                  wasteburningblantyre,
                   overwrite = TRUE)
 
+
+# explore -----------------------------------------------------------------
+
+
+wasteburningblantyre |>
+  select(settlement_type, transparent_bag:others) |>
+  pivot_longer(cols = !settlement_type) |>
+  group_by(settlement_type, name) |>
+  filter(!is.na(value)) |>
+  summarise(
+    sum = sum(value)
+  ) |>
+  mutate(percent = sum / sum(sum) * 100) |>
+
+  ggplot(aes(x = settlement_type, y = percent, fill = name)) +
+  geom_col()
 
 
 # additional processing ---------------------------------------------------
