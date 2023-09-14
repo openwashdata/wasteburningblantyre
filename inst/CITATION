@@ -1,6 +1,6 @@
 
 bibentry(bibtype = "Misc",
-         key = "schobitzyesaya",
+         key = "schobitzyesaya:2023",
          title = "wasteburningblantyre: What the Package Does (One Line, Title Case)",
          author = c(person(given = "Lars",
                            family = "Schöbitz"),

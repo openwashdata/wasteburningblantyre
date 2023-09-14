@@ -7,6 +7,7 @@ library(tidyverse)
 # functions ---------------------------------------------------------------
 
 source("utils/get_variable_info.R")
+source("utils/count_unnest.R")
 
 is_binary <- function(x) {
   all(x %in% c(0, 1))
@@ -91,6 +92,7 @@ winter_codebook_small <- winter_codebook |>
 
 ### winter survey -------------
 
+
 survey_winter_labelled <- survey_winter |>
   select(id = `_index`,
          today,
@@ -138,7 +140,8 @@ survey_winter_labelled <- survey_winter |>
   select(-list_name, -value) |>
   pivot_wider(names_from = var_name,
               values_from = label,
-              values_fn = list)
+              values_fn = list) |>
+  arrange(id)
 
 ## identify column names that can be unnested because each vector is length 1
 ## or 0
@@ -162,9 +165,9 @@ winter_survey <- survey_winter_labelled |>
   mutate(burners = case_when(
     map_lgl(disposal, ~"Burning" %in% .) ~ "Yes",
     TRUE ~ "No"
-  )) |>
-  unnest(cols = all_of(var_names_unnest_winter))
+  ))
 
+#unnest(cols = all_of(var_names_unnest_winter))
 ## summer data --------------
 
 ### summer codebook --------------
@@ -388,7 +391,7 @@ packageVersion("cffr")
 mod_cff <- cff_create("DESCRIPTION",
                       dependencies = FALSE,
                       keys = list(#"doi" = doi,
-                                  "date-released" = Sys.Date()))
+                        "date-released" = Sys.Date()))
 
 # writes the CFF file
 cff_write(mod_cff)
