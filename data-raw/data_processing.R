@@ -158,6 +158,7 @@ winter_survey <- survey_winter_labelled |>
   mutate(income = map(income, as.numeric)) |>
   mutate(females = map(females, as.numeric)) |>
   mutate(males = map(males, as.numeric)) |>
+  mutate(daily_waste = map(daily_waste, as.numeric)) |>
   mutate(settlement_type = case_when(
     locat %in% c("Sunnyside", "Nyambadwe", "Namiwawa", "Naperi") ~ "formal",
     locat %in% c("Ndirande", "Kachere", "Chirimba", "Bangwe") ~ "informal"
@@ -165,7 +166,9 @@ winter_survey <- survey_winter_labelled |>
   mutate(burners = case_when(
     map_lgl(disposal, ~"Burning" %in% .) ~ "Yes",
     TRUE ~ "No"
-  ))
+  )) |>
+  unnest(cols = all_of(var_names_unnest_winter), keep_empty = TRUE) |>
+  mutate(season = "winter")
 
 #unnest(cols = all_of(var_names_unnest_winter))
 ## summer data --------------
@@ -320,7 +323,8 @@ summer_survey <- survey_summer_labelled |>
     locat %in% c("Sunnyside", "Nyambadwe", "Namiwawa", "Naperi") ~ "formal",
     locat %in% c("Ndirande", "Kachere", "Chirimba", "Bangwe") ~ "informal"
   )) |>
-  unnest(cols = all_of(var_names_unnest_summer))
+  unnest(cols = all_of(var_names_unnest_summer), keep_empty = TRUE) |>
+  mutate(season = "summer")
 
 
 # data manipulation characterisation --------------------------------------
