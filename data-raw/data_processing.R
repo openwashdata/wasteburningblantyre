@@ -231,7 +231,9 @@ summer_codebook_small <- summer_codebook |>
 
 ### summer survey ----------------
 
-survey_summer_labelled <- survey_summer |>
+survey_summer_labelled
+
+survey_summer |>
   select(id = `_index`,
          today,
          Interviewer,
@@ -304,7 +306,6 @@ survey_summer_labelled <- survey_summer |>
   pivot_wider(names_from = var_name,
               values_from = label,
               values_fn = list)
-
 
 ## identify column names that can be unnested because each vector is length 1
 ## or 0
@@ -466,8 +467,17 @@ summer_survery_bind <- summer_survey_join |>
 
 wasteburningblantyre <- summer_survery_bind |>
   bind_rows(winter_survey_bind) |>
-  select(-waste) |>
+  mutate(males = case_when(
+    is.na(males) == TRUE ~ 0,
+    TRUE ~ males
+  )) |>
+  mutate(females = case_when(
+    is.na(females) == TRUE ~ 0,
+    TRUE ~ females
+  )) |>
+  # select(-waste) |>
   relocate(c(date_collect, date_characterisation), .after = date_survey)
+
 
 ## code to prepare `DATASET` dataset goes here
 
@@ -476,41 +486,32 @@ usethis::use_data(summer_survey,
                   summer_characterisation,
                   winter_characterisation,
                   wasteburningblantyre,
+                  summer_codebook,
+                  summer_codebook_names_tidy,
+                  winter_codebook,
+                  winter_codebook_names_tidy,
                   overwrite = TRUE)
 
 
-# explore -----------------------------------------------------------------
-
-
-wasteburningblantyre |>
-  select(settlement_type, transparent_bag:others) |>
-  pivot_longer(cols = !settlement_type) |>
-  group_by(settlement_type, name) |>
-  filter(!is.na(value)) |>
-  summarise(
-    sum = sum(value)
-  ) |>
-  mutate(percent = sum / sum(sum) * 100) |>
-
-  ggplot(aes(x = settlement_type, y = percent, fill = name)) +
-  geom_col()
 
 
 # additional processing ---------------------------------------------------
 
 # Specify values for directory and file_name
 
-directories <- c(rep("data/", 4))
+directories <- c(rep("data/", 5))
 
 file_names <- c("summer_survey.rda",
                 "winter_survey.rda",
                 "summer_characterisation.rda",
-                "winter_characterisation.rda")
+                "winter_characterisation.rda",
+                "wasteburningblantyre.rda")
 
 dictionary <- get_variable_info(data = list(summer_survey,
                                             winter_survey,
                                             summer_characterisation,
-                                            winter_characterisation),
+                                            winter_characterisation,
+                                            wasteburningblantyre),
                                 directory = directories,
                                 file_name = file_names)
 dictionary |>
@@ -542,10 +543,6 @@ cff_write(mod_cff)
 path_cit <- file.path("inst/CITATION")
 
 write_citation("CITATION.cff", file = path_cit)
-
-# By last, read the citation
-cat(readLines(path_cit), sep = "\n")
-
 
 
 

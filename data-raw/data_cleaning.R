@@ -157,10 +157,6 @@ winter_survey |>
   count_unnest(daily_waste, sort = FALSE)
 
 # wastecat = waste_cat
-# summer: multiple choice
-# winter: select one
-# can't be combined as they are different questions
-# additionally remduced the number of response values
 
 summer_codebook |>
   filter(var_name == "waste_cat") |>

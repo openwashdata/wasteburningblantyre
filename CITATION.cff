@@ -50,7 +50,7 @@ preferred-citation:
   year: '2023'
   abstract: What the package does (one paragraph).
   version: 0.0.0.9000
-date-released: '2023-09-14'
+date-released: '2023-09-18'
 contact:
 - family-names: Schöbitz
   given-names: Lars
