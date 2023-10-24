@@ -83,15 +83,13 @@ winter_codebook_names_tidy <- winter_codebook_names |>
 # join survey questions with variable names and list names
 
 winter_codebook <- winter_codebook_names_tidy |>
-  left_join(winter_codebook_choices,
-            relationship = "many-to-many") |>
+  left_join(winter_codebook_choices) |>
   rename(value = name)
 
 winter_codebook_small <- winter_codebook |>
   select(var_name, list_name, value, label)
 
 ### winter survey -------------
-
 
 survey_winter_labelled <- survey_winter |>
   select(id = `_index`,
@@ -157,6 +155,10 @@ var_names_unnest_winter <- survey_winter_labelled %>%
 
 ## final data manipulation
 
+survey_winter_labelled |>
+  select(income) |>
+  mutate(income = map(income, as.numeric))
+
 winter_survey <- survey_winter_labelled |>
   # turn income column into numeric vectors
   mutate(income = map(income, as.numeric)) |>
@@ -174,6 +176,12 @@ winter_survey <- survey_winter_labelled |>
   )) |>
   unnest(cols = all_of(var_names_unnest_winter), keep_empty = TRUE) |>
   mutate(season = "winter")
+
+winter_survey |>
+  count(wmanagement)
+
+winter_survey |>
+  count_unnest(disposal)
 
 #unnest(cols = all_of(var_names_unnest_winter))
 ## summer data --------------
