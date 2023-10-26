@@ -6,6 +6,7 @@ source("data-raw/data_processing.R")
 
 # id cleared
 # all four datasets get combined into once single dataset
+
 # the ids for summer and winter survey get joined with the respective
 # characterisation data
 # once a complete dataset is produced that contains all data, a new unique
